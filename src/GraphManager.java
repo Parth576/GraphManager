@@ -98,6 +98,24 @@ public class GraphManager {
         }
     }
 
+    public void addEdge(String srcLabel, String dstLabel) {
+        if (graph.containsEdge(srcLabel, dstLabel)) {
+            System.out.println("Edge already exists from " + srcLabel + " to " + dstLabel);
+        } else {
+            graph.addEdge(srcLabel, dstLabel);
+            System.out.println("Edge successfully added from " + srcLabel + " to " + dstLabel);
+        }
+    }
+
+    public void removeEdge(String srcLabel, String dstLabel) {
+        if (graph.containsEdge(srcLabel, dstLabel)) {
+            graph.removeEdge(srcLabel, dstLabel);
+            System.out.println("Edge successfully removed from " + srcLabel + " to " + dstLabel);
+        } else {
+            System.out.println("Edge does not exist from " + srcLabel + " to " + dstLabel);
+        }
+    }
+
     public void outputDOTGraph() {} //output graph object to a DOT file
 
     public void outputGraphics() {} //output graph object to a PNG file
@@ -116,5 +134,11 @@ public class GraphManager {
         String[] nodesToRemove = {"e","g"};
         g.removeNodes(nodesToRemove);
         g.outputString();
+        g.addEdge("a","f");
+        g.outputString();
+        g.addEdge("a","f");
+        g.removeEdge("a","b");
+        g.outputString();
+        g.removeEdge("a","b");
     }
 }
