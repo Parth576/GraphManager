@@ -62,8 +62,39 @@ public class GraphManager {
         String output = constructOutputString();
         try {
             Files.write(Paths.get(filePath), output.getBytes());
+            System.out.println("Successfully wrote graph information to " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void addNode(String label) {
+        if (graph.containsVertex(label)) {
+            System.out.println("Node " + label + " already exists in the graph");
+        } else {
+            graph.addVertex(label);
+            System.out.println("Node " + label + " added successfully");
+        }
+    }
+
+    public void removeNode(String label) {
+        if (graph.containsVertex(label)) {
+            graph.removeVertex(label);
+            System.out.println("Node " + label + " removed successfully");
+        } else {
+            System.out.println("Node " + label + " not present in graph");
+        }
+    }
+
+    public void addNodes(String[] labels) {
+        for (String label : labels) {
+            addNode(label);
+        }
+    }
+
+    public void removeNodes(String[] labels) {
+        for (String label : labels) {
+            removeNode(label);
         }
     }
 
@@ -75,5 +106,15 @@ public class GraphManager {
         g.parseGraph("src/test.dot");
         g.outputString();
         g.outputGraph("src/graphinfo.txt");
+        g.addNode("e");
+        g.outputString();
+        g.removeNode("e");
+        g.outputString();
+        String[] nodesToAdd = {"e","f","g"};
+        g.addNodes(nodesToAdd);
+        g.outputString();
+        String[] nodesToRemove = {"e","g"};
+        g.removeNodes(nodesToRemove);
+        g.outputString();
     }
 }
