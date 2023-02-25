@@ -1,3 +1,5 @@
+package com.parth.project;
+
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
@@ -63,9 +65,16 @@ public class GraphManager {
         return output;
     }
 
+
     public void outputString() {
         String output = constructOutputString();
         System.out.print(output);
+    }
+
+    @Override
+    public String toString() {
+        String output = constructOutputString();
+        return output;
     }
 
     public void outputGraph(String filePath) {
