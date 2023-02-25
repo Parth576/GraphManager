@@ -1,9 +1,17 @@
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.Graph;
+import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -133,7 +141,20 @@ public class GraphManager {
 
     }
 
-    public void outputGraphics() {} //output graph object to a PNG file
+    public void outputGraphics(String filePath) {
+        JGraphXAdapter<String, DefaultEdge> graphAdapter = new JGraphXAdapter<String, DefaultEdge>(graph);
+        mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
+        layout.execute(graphAdapter.getDefaultParent());
+
+        BufferedImage image = mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
+        File imgFile = new File(filePath);
+        try {
+            ImageIO.write(image, "PNG", imgFile);
+            System.out.println("Successfully saved image of graph to " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args) {
         GraphManager g = new GraphManager();
         g.parseGraph("src/test.dot");
@@ -156,5 +177,6 @@ public class GraphManager {
         g.outputString();
         g.removeEdge("a","b");
         g.outputDOTGraph("src/modified.dot");
+        g.outputGraphics("src/modified.png");
     }
 }
