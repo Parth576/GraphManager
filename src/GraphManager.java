@@ -1,10 +1,12 @@
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -116,7 +118,20 @@ public class GraphManager {
         }
     }
 
-    public void outputDOTGraph() {} //output graph object to a DOT file
+    public void outputDOTGraph(String filePath) {
+        DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>();
+        StringWriter writer = new StringWriter();
+        exporter.setVertexIdProvider(v -> v);
+        exporter.exportGraph(graph, writer);
+        String dotString = writer.toString();
+        try {
+            Files.write(Paths.get(filePath), dotString.getBytes());
+            System.out.print("Successfully exported graph to DOT format at "+ filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public void outputGraphics() {} //output graph object to a PNG file
     public static void main(String[] args) {
@@ -140,5 +155,6 @@ public class GraphManager {
         g.removeEdge("a","b");
         g.outputString();
         g.removeEdge("a","b");
+        g.outputDOTGraph("src/modified.dot");
     }
 }
