@@ -75,12 +75,11 @@ public class GraphManager {
 
     }
 
-    public boolean outputGraph(String filePath) throws Exception {
+    public void outputGraph(String filePath) throws Exception {
         String output = constructOutputString();
         try {
             Files.write(Paths.get(filePath), output.getBytes());
             System.out.println("Successfully wrote graph information to " + filePath);
-            return true;
         } catch (IOException e) {
             throw new Exception("Unable to write graph infostring to file", e);
         }
@@ -104,7 +103,7 @@ public class GraphManager {
 
 
 
-    public boolean addNode(String label) throws Exception {
+    public void addNode(String label) throws Exception {
         if (!graph.containsVertex(label)) {
             try {
                 graph.addVertex(label);
@@ -112,7 +111,6 @@ public class GraphManager {
                 throw new Exception("Error while adding node", e);
             }
         }
-        return true;
     }
 
     public boolean removeNode(String label) throws Exception {
@@ -128,11 +126,10 @@ public class GraphManager {
         }
     }
 
-    public boolean addNodes(String[] labels) throws Exception {
+    public void addNodes(String[] labels) throws Exception {
         for (String label : labels) {
             addNode(label);
         }
-        return true;
     }
 
     public boolean removeNodes(String[] labels) throws Exception {
@@ -176,7 +173,7 @@ public class GraphManager {
 
     }
 
-    public boolean outputDOTGraph(String filePath) throws Exception {
+    public void outputDOTGraph(String filePath) throws Exception {
         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>();
         StringWriter writer = new StringWriter();
         String dotString;
@@ -190,14 +187,13 @@ public class GraphManager {
         }
         try {
             Files.write(Paths.get(filePath), dotString.getBytes());
-            return true;
         } catch (IOException e) {
             throw new IOException("Error while exporting to DOT graph", e);
         }
 
     }
 
-    public boolean outputGraphics(String filePath) throws Exception {
+    public void outputGraphics(String filePath) throws Exception {
         JGraphXAdapter<String, DefaultEdge> graphAdapter = new JGraphXAdapter<String, DefaultEdge>(graph);
         mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
         try {
@@ -210,7 +206,6 @@ public class GraphManager {
         File imgFile = new File(filePath);
         try {
             ImageIO.write(image, "PNG", imgFile);
-            return true;
         } catch (IOException e) {
             throw new Exception("Error while writing image to file", e);
         }
