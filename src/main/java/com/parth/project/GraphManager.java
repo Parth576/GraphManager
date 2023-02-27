@@ -25,13 +25,12 @@ public class GraphManager {
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
-    public boolean parseGraph(String filePath) {
+    public void parseGraph(String filePath) throws Exception {
         String fileContent = null;
         try {
             fileContent = Files.readString(Paths.get(filePath));
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            throw new Exception("Error while reading file", e);
         }
 
         try {
@@ -39,10 +38,8 @@ public class GraphManager {
             dotImporter.setVertexFactory(label -> label);
             dotImporter.importGraph(graph, new StringReader(fileContent));
             System.out.println("Graph successfully parsed!");
-            return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new Exception("Error while parsing graph", e);
         }
 
     }
