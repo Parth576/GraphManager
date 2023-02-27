@@ -27,6 +27,17 @@ public class GraphManagerTest {
         assertTrue(g.containsEdge("c", "d"));
         assertTrue(g.containsEdge("d", "a"));
         System.out.println(g.toString());
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            g.parseGraph("src/doesnotexist.dot");
+        });
+
+        String expectedMessage = "Error while reading file";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+
     }
 
     @Test
