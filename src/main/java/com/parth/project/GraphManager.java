@@ -25,25 +25,26 @@ public class GraphManager {
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
-    public void parseGraph(String filePath) {
+    public boolean parseGraph(String filePath) {
         String fileContent = null;
         try {
             fileContent = Files.readString(Paths.get(filePath));
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
         try {
             DOTImporter<String, DefaultEdge> dotImporter = new DOTImporter<>();
             dotImporter.setVertexFactory(label -> label);
             dotImporter.importGraph(graph, new StringReader(fileContent));
+            System.out.println("Graph successfully parsed!");
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
-        System.out.println("Graph successfully parsed!");
     }
 
     private String constructOutputString() {
@@ -65,127 +66,157 @@ public class GraphManager {
         return output;
     }
 
-
-    public void outputString() {
-        String output = constructOutputString();
-        System.out.print(output);
-    }
-
     @Override
     public String toString() {
-        String output = constructOutputString();
+        String output = "";
+        try {
+            output = constructOutputString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return output;
+
     }
 
-    public void outputGraph(String filePath) {
+    public boolean outputGraph(String filePath) throws Exception {
         String output = constructOutputString();
         try {
             Files.write(Paths.get(filePath), output.getBytes());
             System.out.println("Successfully wrote graph information to " + filePath);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new Exception("Unable to write graph infostring to file", e);
         }
     }
 
-    public void addNode(String label) {
+    public int nodeSize() {
+        return graph.vertexSet().size();
+    }
+
+    public int edgeSize() {
+        return graph.edgeSet().size();
+    }
+
+    public boolean containsNode(String label) {
+        return graph.containsVertex(label);
+    }
+
+    public boolean containsEdge(String srcLabel, String dstLabel) {
+        return graph.containsEdge(srcLabel, dstLabel);
+    }
+
+
+
+    public boolean addNode(String label) throws Exception {
+        if (!graph.containsVertex(label)) {
+            try {
+                graph.addVertex(label);
+            } catch (Exception e) {
+                throw new Exception("Error while adding node", e);
+            }
+        }
+        return true;
+    }
+
+    public boolean removeNode(String label) throws Exception {
         if (graph.containsVertex(label)) {
-            System.out.println("Node " + label + " already exists in the graph");
+            try {
+                graph.removeVertex(label);
+                return true;
+            } catch (Exception e) {
+                throw new Exception("Error while removing node", e);
+            }
         } else {
-            graph.addVertex(label);
-            System.out.println("Node " + label + " added successfully");
+            return false;
         }
     }
 
-    public void removeNode(String label) {
-        if (graph.containsVertex(label)) {
-            graph.removeVertex(label);
-            System.out.println("Node " + label + " removed successfully");
-        } else {
-            System.out.println("Node " + label + " not present in graph");
-        }
-    }
-
-    public void addNodes(String[] labels) {
+    public boolean addNodes(String[] labels) throws Exception {
         for (String label : labels) {
             addNode(label);
         }
+        return true;
     }
 
-    public void removeNodes(String[] labels) {
+    public boolean removeNodes(String[] labels) throws Exception {
+        boolean check = true;
         for (String label : labels) {
-            removeNode(label);
+            if (!removeNode(label)) {
+                System.out.println("Failed to remove node " + label);
+                check = false;
+            }
         }
+        return check;
     }
 
-    public void addEdge(String srcLabel, String dstLabel) {
-        if (graph.containsEdge(srcLabel, dstLabel)) {
-            System.out.println("Edge already exists from " + srcLabel + " to " + dstLabel);
-        } else {
-            graph.addEdge(srcLabel, dstLabel);
-            System.out.println("Edge successfully added from " + srcLabel + " to " + dstLabel);
+    public boolean addEdge(String srcLabel, String dstLabel) throws Exception {
+        try {
+            if (graph.containsEdge(srcLabel, dstLabel)) {
+                return false;
+            } else {
+                if (!graph.containsVertex(srcLabel)) graph.addVertex(srcLabel);
+                if (!graph.containsVertex(dstLabel)) graph.addVertex(dstLabel);
+                graph.addEdge(srcLabel, dstLabel);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new Exception("Error while adding edge", e);
         }
+
     }
 
-    public void removeEdge(String srcLabel, String dstLabel) {
-        if (graph.containsEdge(srcLabel, dstLabel)) {
-            graph.removeEdge(srcLabel, dstLabel);
-            System.out.println("Edge successfully removed from " + srcLabel + " to " + dstLabel);
-        } else {
-            System.out.println("Edge does not exist from " + srcLabel + " to " + dstLabel);
+    public boolean removeEdge(String srcLabel, String dstLabel) throws Exception {
+        try {
+            if (graph.containsEdge(srcLabel, dstLabel)) {
+                graph.removeEdge(srcLabel, dstLabel);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new Exception("Error while removing edge", e);
         }
+
     }
 
-    public void outputDOTGraph(String filePath) {
+    public boolean outputDOTGraph(String filePath) throws Exception {
         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>();
         StringWriter writer = new StringWriter();
-        exporter.setVertexIdProvider(v -> v);
-        exporter.exportGraph(graph, writer);
-        String dotString = writer.toString();
+        String dotString;
+        try {
+
+            exporter.setVertexIdProvider(v -> v);
+            exporter.exportGraph(graph, writer);
+            dotString = writer.toString();
+        } catch (Exception e) {
+            throw new Exception("Error while generating dotstring", e);
+        }
         try {
             Files.write(Paths.get(filePath), dotString.getBytes());
-            System.out.print("Successfully exported graph to DOT format at "+ filePath);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("Error while exporting to DOT graph", e);
         }
 
     }
 
-    public void outputGraphics(String filePath) {
+    public boolean outputGraphics(String filePath) throws Exception {
         JGraphXAdapter<String, DefaultEdge> graphAdapter = new JGraphXAdapter<String, DefaultEdge>(graph);
         mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
-        layout.execute(graphAdapter.getDefaultParent());
+        try {
+            layout.execute(graphAdapter.getDefaultParent());
+        } catch (Exception e) {
+            throw new Exception("Error while converting graph to image", e);
+        }
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
         File imgFile = new File(filePath);
         try {
             ImageIO.write(image, "PNG", imgFile);
-            System.out.println("Successfully saved image of graph to " + filePath);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new Exception("Error while writing image to file", e);
         }
     }
-    public static void main(String[] args) {
-        GraphManager g = new GraphManager();
-        g.parseGraph("src/test.dot");
-        g.outputString();
-        g.outputGraph("src/graphinfo.txt");
-        g.addNode("e");
-        g.outputString();
-        g.removeNode("e");
-        g.outputString();
-        String[] nodesToAdd = {"e","f","g"};
-        g.addNodes(nodesToAdd);
-        g.outputString();
-        String[] nodesToRemove = {"e","g"};
-        g.removeNodes(nodesToRemove);
-        g.outputString();
-        g.addEdge("a","f");
-        g.outputString();
-        g.addEdge("a","f");
-        g.removeEdge("a","b");
-        g.outputString();
-        g.removeEdge("a","b");
-        g.outputDOTGraph("src/modified.dot");
-        g.outputGraphics("src/modified.png");
-    }
+
 }
