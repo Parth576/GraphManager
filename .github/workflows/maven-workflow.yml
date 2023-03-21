@@ -19,7 +19,10 @@ jobs:
           java-version: '19'
           distribution: 'oracle'
           cache: maven
-      - name: Test with Maven
-        run: mvn test
       - name: Build with Maven
-        run: mvn package
+        run: mvn --batch-mode --update-snapshots package
+      - run: mkdir artifacts && cp target/*.jar artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: staging
