@@ -4,9 +4,9 @@
 
 ### Instructions to Run
 - Download the ```GraphManager.zip``` file from this repository
-- Import it in IntelliJ IDE
-- From the menu bar, click on Run and then Run GraphManagerTest
-- This should run all the tests for GraphManager
+- Run ```mvn package```
+- This should run all tests for the project
+- This command will build the project in the ```target``` folder as well
 
 ### APIs
 - ```void parseGraph(String filePath)``` - import a directed graph in a dot file
