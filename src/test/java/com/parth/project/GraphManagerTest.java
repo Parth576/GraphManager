@@ -138,7 +138,7 @@ public class GraphManagerTest {
     }
 
     @Test
-    public void testGraphSearch() throws Exception {
+    public void testBFS() throws Exception {
         GraphManager gm = new GraphManager();
         gm.parseGraph("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
@@ -149,13 +149,39 @@ public class GraphManagerTest {
         expected.add("h");
         String expectedString = "a -> d -> c -> b -> h";
 
-        GraphManager.Path result = gm.GraphSearch("a", "h");
+        GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.BFS);
 
         assertNotNull(result);
         assertEquals(expected, result.nodes);
         assertEquals(expectedString, result.toString());
 
-        result = gm.GraphSearch("h", "a");
+        result = gm.GraphSearch("h", "a", GraphManager.Algorithm.BFS);
+        assertNull(result);
+    }
+
+    @Test
+    public void testDFS() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.parseGraph("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("b");
+        expected.add("f");
+        expected.add("e");
+        expected.add("c");
+        expected.add("g");
+        expected.add("d");
+        expected.add("i");
+        expected.add("h");
+        String expectedString = "a -> b -> f -> e -> c -> g -> d -> i -> h";
+
+        GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.DFS);
+
+        assertNotNull(result);
+        assertEquals(expected, result.nodes);
+        assertEquals(expectedString, result.toString());
+
+        result = gm.GraphSearch("h", "a", GraphManager.Algorithm.DFS);
         assertNull(result);
     }
 
