@@ -10,6 +10,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
 import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -25,6 +26,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class GraphManager {
+
+    enum Algorithm {
+        BFS,
+        DFS
+    }
 
     public class Path {
         ArrayList<String> nodes;
@@ -245,11 +251,19 @@ public class GraphManager {
         }
     }
 
-    public Path GraphSearch(String src, String dst) {
+    public Path GraphSearch(String src, String dst, Algorithm algo) {
         if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
             return null;
         }
-        Iterator<String> iterator = new DepthFirstIterator<>(graph, src);
+        Iterator<String> iterator;
+        if (algo == Algorithm.BFS) {
+            iterator = new BreadthFirstIterator<>(graph, src);
+        } else if (algo == Algorithm.DFS) {
+            iterator = new DepthFirstIterator<>(graph, src);
+        } else {
+            return null;
+        }
+
         Path path = new Path();
         while(iterator.hasNext()) {
             String node = iterator.next();
@@ -264,9 +278,5 @@ public class GraphManager {
             return null;
         }
     }
-
-
-
-
 
 }
