@@ -143,11 +143,15 @@ public class GraphManagerTest {
         gm.parseGraph("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
         expected.add("a");
-        expected.add("d");
-        expected.add("c");
         expected.add("b");
+        expected.add("f");
+        expected.add("e");
+        expected.add("c");
+        expected.add("g");
+        expected.add("d");
+        expected.add("i");
         expected.add("h");
-        String expectedString = "a -> d -> c -> b -> h";
+        String expectedString = "a -> b -> f -> e -> c -> g -> d -> i -> h";
 
         GraphManager.Path result = gm.GraphSearch("a", "h");
 

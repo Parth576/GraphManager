@@ -9,7 +9,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
-import org.jgrapht.traverse.BreadthFirstIterator;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -249,7 +249,7 @@ public class GraphManager {
         if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
             return null;
         }
-        Iterator<String> iterator = new BreadthFirstIterator<>(graph, src);
+        Iterator<String> iterator = new DepthFirstIterator<>(graph, src);
         Path path = new Path();
         while(iterator.hasNext()) {
             String node = iterator.next();
