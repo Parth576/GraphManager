@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -134,6 +135,28 @@ public class GraphManagerTest {
         System.out.println("output: " + output);
         String expected = Files.readString(Paths.get("src/expected.txt"));
         assertEquals(expected, output);
+    }
+
+    @Test
+    public void testGraphSearch() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.parseGraph("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("d");
+        expected.add("c");
+        expected.add("b");
+        expected.add("h");
+        String expectedString = "a -> d -> c -> b -> h";
+
+        GraphManager.Path result = gm.GraphSearch("a", "h");
+
+        assertNotNull(result);
+        assertEquals(expected, result.nodes);
+        assertEquals(expectedString, result.toString());
+
+        result = gm.GraphSearch("h", "a");
+        assertNull(result);
     }
 
 }
