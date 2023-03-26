@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,9 +20,42 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 public class GraphManager {
+
+    public class Path {
+        ArrayList<String> nodes;
+
+        Path() {
+            nodes = new ArrayList<>();
+        }
+
+        public void addNode(String node) {
+            this.nodes.add(node);
+        }
+
+        public boolean containsNode(String searchNode) {
+            for (String node : nodes) {
+                if (searchNode.equals(node)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            String output = "";
+            for(int i=0; i<nodes.size()-1; i++) {
+                output += nodes.get(i) + " -> ";
+            }
+            output += nodes.get(nodes.size()-1);
+            return output;
+        }
+    }
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
@@ -210,5 +244,29 @@ public class GraphManager {
             throw new Exception("Error while writing image to file", e);
         }
     }
+
+    public Path GraphSearch(String src, String dst) {
+        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
+            return null;
+        }
+        Iterator<String> iterator = new DepthFirstIterator<>(graph, src);
+        Path path = new Path();
+        while(iterator.hasNext()) {
+            String node = iterator.next();
+            path.addNode(node);
+            if(node.equals(dst)) {
+                break;
+            }
+        }
+        if (path.containsNode(dst)) {
+            return path;
+        } else {
+            return null;
+        }
+    }
+
+
+
+
 
 }
