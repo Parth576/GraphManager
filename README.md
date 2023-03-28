@@ -60,6 +60,17 @@ g.outputGraphics("src/modified.png");
 
 - Find a path from one node to another using BFS or DFS algorithm
 ```java
-g.GraphSearch("a", "c", Algorithm.BFS);
-g.GraphSearch("c", "d", Algorithm.DFS)
+Path bfs = g.GraphSearch("a", "c", Algorithm.BFS);
+Path dfs = g.GraphSearch("c", "d", Algorithm.DFS);
+
+```
+
+- The ```toString()``` methods of the ```Path``` class will print the path in the format ```a -> b -> c```
+- If no path if found, the ```GraphSearch``` API returns ```null```, so we need to check if the returned path is not null
+- The ```Path``` class also exposes the variable ```nodes``` which is an ArrayList containing the searched nodes in the order that they were visited
+```java
+if (bfs != null) System.out.println(bfs.toString());
+if (dfs != null) System.out.println(dfs.toString());
+bfs.nodes;
+dfs.nodes;
 ```
