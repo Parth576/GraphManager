@@ -1,4 +1,4 @@
-# CSE 464 Project Part 1
+# CSE 464 Project Part 1 & 2
 
 ## GraphManager
 
@@ -7,6 +7,7 @@
 - Run ```mvn package```
 - This should run all tests for the project
 - This command will build the project in the ```target``` folder as well
+- Alternatively, unzip ```GraphManager.zip``` and then open the GraphManager folder in IntelliJ
 
 ### APIs
 - ```void parseGraph(String filePath)``` - import a directed graph in a dot file
@@ -24,6 +25,7 @@
 - ```boolean removeEdge(String srcLabel, String dstLabel)``` - Returns true if edge is removed successfully otherwise returns false if edge does not exist in the graph
 - ```void outputDOTGraph(String filePath)``` - Outputs the modified graph in DOT format to the specified file
 - ```void outputGraphics(String filePath)``` - Output the modified graph to a PNG file (Graph Visualization)
+- ```Path GraphSearch(String src, String dst, Algorithm algo)``` - Find a path from ```src``` to ```dst``` node using BFS or DFS algorithm depending on enum specified. Possible values of the enum can be ```Algorithm.BFS``` or ```Algorithm.DFS```
 
 ### Example Code
 - Creating a new GraphManager object
@@ -54,4 +56,10 @@ g.removeEdge("a","b");
 ```java
 g.outputDOTGraph("src/modified.dot");
 g.outputGraphics("src/modified.png");
+```
+
+- Find a path from one node to another using BFS or DFS algorithm
+```java
+g.GraphSearch("a", "c", Algorithm.BFS);
+g.GraphSearch("c", "d", Algorithm.DFS)
 ```
