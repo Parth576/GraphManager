@@ -33,7 +33,7 @@ public class GraphManager {
     }
 
     public class Path {
-        ArrayList<String> nodes;
+        private ArrayList<String> nodes;
 
         Path() {
             nodes = new ArrayList<>();
@@ -50,6 +50,10 @@ public class GraphManager {
                 }
             }
             return false;
+        }
+
+        public ArrayList<String> getNodeList() {
+            return this.nodes;
         }
 
         @Override

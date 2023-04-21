@@ -152,7 +152,7 @@ public class GraphManagerTest {
         GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.BFS);
 
         assertNotNull(result);
-        assertEquals(expected, result.nodes);
+        assertEquals(expected, result.getNodeList());
         assertEquals(expectedString, result.toString());
 
         result = gm.GraphSearch("h", "a", GraphManager.Algorithm.BFS);
@@ -178,7 +178,7 @@ public class GraphManagerTest {
         GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.DFS);
 
         assertNotNull(result);
-        assertEquals(expected, result.nodes);
+        assertEquals(expected, result.getNodeList());
         assertEquals(expectedString, result.toString());
 
         result = gm.GraphSearch("h", "a", GraphManager.Algorithm.DFS);
