@@ -44,12 +44,7 @@ public class GraphManager {
         }
 
         public boolean containsNode(String searchNode) {
-            for (String node : nodes) {
-                if (searchNode.equals(node)) {
-                    return true;
-                }
-            }
-            return false;
+            return nodes.contains(searchNode);
         }
 
         public ArrayList<String> getNodeList() {
