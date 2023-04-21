@@ -177,14 +177,17 @@ public class GraphManager {
     }
 
     public boolean removeNodes(String[] labels) throws Exception {
-        boolean check = true;
+        ArrayList<String> failedNodes = new ArrayList<>();
         for (String label : labels) {
             if (!removeNode(label)) {
-                System.out.println("Failed to remove node " + label);
-                check = false;
+                failedNodes.add(label);
             }
         }
-        return check;
+        if (!failedNodes.isEmpty()) {
+            System.out.println("Failed to remove nodes: " + failedNodes);
+            return false;
+        }
+        return true;
     }
 
     public boolean addEdge(String srcLabel, String dstLabel) throws Exception {
