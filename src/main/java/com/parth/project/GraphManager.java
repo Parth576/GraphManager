@@ -69,7 +69,7 @@ public class GraphManager {
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
-    public void parseGraph(String filePath) throws Exception {
+    public void importGraphFromDOT(String filePath) throws Exception {
         String fileContent = null;
         try {
             fileContent = Files.readString(Paths.get(filePath));
@@ -124,7 +124,7 @@ public class GraphManager {
 
     }
 
-    public void outputGraph(String filePath) throws Exception {
+    public void exportGraphInfo(String filePath) throws Exception {
         String output = constructOutputString();
         try {
             Files.write(Paths.get(filePath), output.getBytes());
@@ -222,7 +222,7 @@ public class GraphManager {
 
     }
 
-    public void outputDOTGraph(String filePath) throws Exception {
+    public void exportGraphToDOT(String filePath) throws Exception {
         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>();
         StringWriter writer = new StringWriter();
         String dotString;
@@ -242,7 +242,7 @@ public class GraphManager {
 
     }
 
-    public void outputGraphics(String filePath) throws Exception {
+    public void exportGraphToPNG(String filePath) throws Exception {
         JGraphXAdapter<String, DefaultEdge> graphAdapter = new JGraphXAdapter<String, DefaultEdge>(graph);
         mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
         try {

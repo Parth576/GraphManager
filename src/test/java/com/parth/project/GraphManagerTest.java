@@ -17,7 +17,7 @@ public class GraphManagerTest {
     @BeforeEach
     public void setup() throws Exception {
         g = new GraphManager();
-        g.parseGraph("src/test.dot");
+        g.importGraphFromDOT("src/test.dot");
     }
 
     @Test
@@ -31,7 +31,7 @@ public class GraphManagerTest {
         System.out.println(g.toString());
 
         Exception exception = assertThrows(Exception.class, () -> {
-            g.parseGraph("src/doesnotexist.dot");
+            g.importGraphFromDOT("src/doesnotexist.dot");
         });
 
         String expectedMessage = "Error while reading file";
@@ -51,7 +51,7 @@ public class GraphManagerTest {
 
     @Test
     public void testOutputGraph() throws Exception {
-        g.outputGraph("src/testOutputGraph.txt");
+        g.exportGraphInfo("src/testOutputGraph.txt");
         String output = Files.readString(Paths.get("src/testOutputGraph.txt"));
         String expected = Files.readString(Paths.get("src/expectedString.txt"));
         assertEquals(output, expected);
@@ -129,7 +129,7 @@ public class GraphManagerTest {
     public void testOutputDOTGraph() throws Exception {
         g.addEdge("e", "f");
         String outputfile = "src/output2.dot";
-        g.outputDOTGraph(outputfile);
+        g.exportGraphToDOT(outputfile);
 
         String output = Files.readString(Paths.get(outputfile));
         System.out.println("output: " + output);
@@ -140,7 +140,7 @@ public class GraphManagerTest {
     @Test
     public void testBFS() throws Exception {
         GraphManager gm = new GraphManager();
-        gm.parseGraph("src/test2.dot");
+        gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
         expected.add("a");
         expected.add("d");
@@ -162,7 +162,7 @@ public class GraphManagerTest {
     @Test
     public void testDFS() throws Exception {
         GraphManager gm = new GraphManager();
-        gm.parseGraph("src/test2.dot");
+        gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
         expected.add("a");
         expected.add("b");
