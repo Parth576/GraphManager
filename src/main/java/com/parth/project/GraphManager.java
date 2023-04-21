@@ -88,23 +88,27 @@ public class GraphManager {
 
     }
 
-    private String constructOutputString() {
-        String output = "";
-        Set<DefaultEdge> edgeSet = graph.edgeSet();
-        Set<String> vertexSet = graph.vertexSet();
-        output += "The number of nodes are: " + vertexSet.size() + "\n";
-        output += "The node labels are: \n";
-        for(String elem : vertexSet) {
-            output += elem + "\n";
+    private String constructOutputString() throws IOException {
+        try {
+            String output = "";
+            Set<DefaultEdge> edgeSet = graph.edgeSet();
+            Set<String> vertexSet = graph.vertexSet();
+            output += "The number of nodes are: " + vertexSet.size() + "\n";
+            output += "The node labels are: \n";
+            for(String elem : vertexSet) {
+                output += elem + "\n";
+            }
+            output += "The number of edges are: " + edgeSet.size() + "\n";
+            output += "The nodes with the direction of edges: \n";
+            for (DefaultEdge edge : edgeSet) {
+                String source = graph.getEdgeSource(edge);
+                String target = graph.getEdgeTarget(edge);
+                output += source + " -> " + target + "\n";
+            }
+            return output;
+        } catch (Exception e) {
+            throw new IOException("Error while constructing output string: " + e.getMessage(), e);
         }
-        output += "The number of edges are: " + edgeSet.size() + "\n";
-        output += "The nodes with the direction of edges: \n";
-        for (DefaultEdge edge : edgeSet) {
-            String source = graph.getEdgeSource(edge);
-            String target = graph.getEdgeTarget(edge);
-            output += source + " -> " + target + "\n";
-        }
-        return output;
     }
 
     @Override
@@ -114,6 +118,7 @@ public class GraphManager {
             output = constructOutputString();
         } catch (Exception e) {
             e.printStackTrace();
+            return "Error while constructing output string: " + e.getMessage();
         }
         return output;
 
@@ -125,7 +130,7 @@ public class GraphManager {
             Files.write(Paths.get(filePath), output.getBytes());
             System.out.println("Successfully wrote graph information to " + filePath);
         } catch (IOException e) {
-            throw new Exception("Unable to write graph infostring to file", e);
+            throw new Exception("Unable to write graph info string to file", e);
         }
     }
 
