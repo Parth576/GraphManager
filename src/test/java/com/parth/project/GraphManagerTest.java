@@ -140,7 +140,7 @@ public class GraphManagerTest {
     }
 
     @Test
-    public void testBFS() throws Exception {
+    public void testBFSWithStrategyPattern() throws Exception {
         GraphManager gm = new GraphManager();
         gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
@@ -162,7 +162,7 @@ public class GraphManagerTest {
     }
 
     @Test
-    public void testDFS() throws Exception {
+    public void testDFSWithStrategyPattern() throws Exception {
         GraphManager gm = new GraphManager();
         gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
