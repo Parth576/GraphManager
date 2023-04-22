@@ -6,7 +6,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.Iterator;
 
-class BreadthFirstSearch extends GraphSearchTemplate {
+class BreadthFirstSearch extends GraphSearchTemplate implements SearchStrategy{
 
     BreadthFirstSearch(Graph<String,DefaultEdge> graph) {
         super(graph);
@@ -14,7 +14,6 @@ class BreadthFirstSearch extends GraphSearchTemplate {
     @Override
     public GraphManager.Path search(String src, String dst) {
         Iterator<String> iterator = new BreadthFirstIterator<>(this.graph, src);
-        GraphManager.Path path = constructPath(iterator, src, dst);
-        return path;
+        return constructPath(iterator, src, dst);
     }
 }
