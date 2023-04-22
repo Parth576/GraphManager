@@ -64,6 +64,10 @@ public class GraphManager {
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
+    public Graph<String, DefaultEdge> getGraph() {
+        return graph;
+    }
+
     public void importGraphFromDOT(String filePath) throws Exception {
         String fileContent = null;
         try {
@@ -257,6 +261,7 @@ public class GraphManager {
             throw new Exception("Error while writing image to file", e);
         }
     }
+
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
         if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
