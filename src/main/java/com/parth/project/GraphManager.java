@@ -9,8 +9,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
-import org.jgrapht.traverse.DepthFirstIterator;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,14 +20,14 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 public class GraphManager {
 
     enum Algorithm {
         BFS,
-        DFS
+        DFS,
+        RandomWalkSearch
     }
 
     public class Path {
@@ -271,6 +269,7 @@ public class GraphManager {
         switch (algo) {
             case BFS -> searchAlgo = new BreadthFirstSearch(getGraph());
             case DFS -> searchAlgo = new DepthFirstSearch(getGraph());
+            case RandomWalkSearch -> searchAlgo = new RandomWalkSearch(getGraph());
             default -> {
                 return null;
             }
