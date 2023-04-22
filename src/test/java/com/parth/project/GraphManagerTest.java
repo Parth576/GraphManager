@@ -1,5 +1,7 @@
 package com.parth.project;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -182,6 +184,58 @@ public class GraphManagerTest {
         assertEquals(expectedString, result.toString());
 
         result = gm.GraphSearch("h", "a", GraphManager.Algorithm.DFS);
+        assertNull(result);
+    }
+
+    @Test
+    public void testBFSWithTemplatePattern() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.importGraphFromDOT("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("d");
+        expected.add("c");
+        expected.add("b");
+        expected.add("h");
+        String expectedString = "a -> d -> c -> b -> h";
+
+        Graph<String,DefaultEdge> currGraph = gm.getGraph();
+        BreadthFirstSearch bfs = new BreadthFirstSearch(currGraph);
+        GraphManager.Path result = bfs.search("a", "h");
+
+        assertNotNull(result);
+        assertEquals(expected, result.getNodeList());
+        assertEquals(expectedString, result.toString());
+
+        result = bfs.search("h", "a");
+        assertNull(result);
+    }
+
+    @Test
+    public void testDFSWithTemplatePattern() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.importGraphFromDOT("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("b");
+        expected.add("f");
+        expected.add("e");
+        expected.add("c");
+        expected.add("g");
+        expected.add("d");
+        expected.add("i");
+        expected.add("h");
+        String expectedString = "a -> b -> f -> e -> c -> g -> d -> i -> h";
+
+        Graph<String,DefaultEdge> currGraph = gm.getGraph();
+        DepthFirstSearch dfs = new DepthFirstSearch(currGraph);
+        GraphManager.Path result = dfs.search("a", "h");
+
+        assertNotNull(result);
+        assertEquals(expected, result.getNodeList());
+        assertEquals(expectedString, result.toString());
+
+        result = dfs.search("h", "a");
         assertNull(result);
     }
 
