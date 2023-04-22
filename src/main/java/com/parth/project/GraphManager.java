@@ -264,31 +264,20 @@ public class GraphManager {
 
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
-            return null;
-        }
-        Iterator<String> iterator;
-        if (algo == Algorithm.BFS) {
-            iterator = new BreadthFirstIterator<>(graph, src);
-        } else if (algo == Algorithm.DFS) {
-            iterator = new DepthFirstIterator<>(graph, src);
-        } else {
-            return null;
-        }
 
-        Path path = new Path();
-        while(iterator.hasNext()) {
-            String node = iterator.next();
-            path.addNode(node);
-            if(node.equals(dst)) {
-                break;
+        GraphSearchContext gs = new GraphSearchContext();
+        SearchStrategy searchAlgo;
+
+        switch (algo) {
+            case BFS -> searchAlgo = new BreadthFirstSearch(getGraph());
+            case DFS -> searchAlgo = new DepthFirstSearch(getGraph());
+            default -> {
+                return null;
             }
         }
-        if (path.containsNode(dst)) {
-            return path;
-        } else {
-            return null;
-        }
+
+        gs.setSearchAlgorithm(searchAlgo);
+        return gs.executeSearchAlgorithm(src, dst);
     }
 
 }
