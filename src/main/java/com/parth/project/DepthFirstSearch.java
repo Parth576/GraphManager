@@ -14,6 +14,6 @@ class DepthFirstSearch extends GraphSearchTemplate implements SearchStrategy {
     @Override
     public GraphManager.Path search(String src, String dst) {
         Iterator<String> iterator = new DepthFirstIterator<>(this.graph, src);
-        return constructPath(iterator, src, dst);
+        return constructPath(iterator, src, dst, false);
     }
 }

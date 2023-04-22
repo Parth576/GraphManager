@@ -13,22 +13,23 @@ abstract class GraphSearchTemplate {
     public GraphSearchTemplate(Graph<String,DefaultEdge> graph) {
         this.graph = graph;
     }
-    private final boolean checkSourceNode(String src) {
+    private boolean checkSourceNode(String src) {
         return graph.containsVertex(src);
-    };
+    }
 
-    private final boolean checkDestinationNode(String dst) {
+    private boolean checkDestinationNode(String dst) {
         return graph.containsVertex(dst);
-    };
+    }
 
     public abstract GraphManager.Path search(String src, String dst);
 
-    public final GraphManager.Path constructPath(Iterator<String> iterator, String src, String dst) {
+    public final GraphManager.Path constructPath(Iterator<String> iterator, String src, String dst, boolean print) {
         if (!checkSourceNode(src) || !checkDestinationNode(dst)) return null;
         GraphManager.Path path = new GraphManager().new Path();
         while(iterator.hasNext()) {
             String node = iterator.next();
             path.addNode(node);
+            if(print) System.out.println(path.toString());
             if(node.equals(dst)) {
                 break;
             }
