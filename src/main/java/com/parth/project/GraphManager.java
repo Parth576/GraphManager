@@ -9,8 +9,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
-import org.jgrapht.traverse.DepthFirstIterator;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,18 +20,18 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 public class GraphManager {
 
     enum Algorithm {
         BFS,
-        DFS
+        DFS,
+        RandomWalkSearch
     }
 
     public class Path {
-        ArrayList<String> nodes;
+        private ArrayList<String> nodes;
 
         Path() {
             nodes = new ArrayList<>();
@@ -44,12 +42,11 @@ public class GraphManager {
         }
 
         public boolean containsNode(String searchNode) {
-            for (String node : nodes) {
-                if (searchNode.equals(node)) {
-                    return true;
-                }
-            }
-            return false;
+            return nodes.contains(searchNode);
+        }
+
+        public ArrayList<String> getNodeList() {
+            return this.nodes;
         }
 
         @Override
@@ -65,7 +62,11 @@ public class GraphManager {
 
     private Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
-    public void parseGraph(String filePath) throws Exception {
+    public Graph<String, DefaultEdge> getGraph() {
+        return graph;
+    }
+
+    public void importGraphFromDOT(String filePath) throws Exception {
         String fileContent = null;
         try {
             fileContent = Files.readString(Paths.get(filePath));
@@ -84,23 +85,27 @@ public class GraphManager {
 
     }
 
-    private String constructOutputString() {
-        String output = "";
-        Set<DefaultEdge> edgeSet = graph.edgeSet();
-        Set<String> vertexSet = graph.vertexSet();
-        output += "The number of nodes are: " + vertexSet.size() + "\n";
-        output += "The node labels are: \n";
-        for(String elem : vertexSet) {
-            output += elem + "\n";
+    private String constructOutputString() throws IOException {
+        try {
+            String output = "";
+            Set<DefaultEdge> edgeSet = graph.edgeSet();
+            Set<String> vertexSet = graph.vertexSet();
+            output += "The number of nodes are: " + vertexSet.size() + "\n";
+            output += "The node labels are: \n";
+            for(String elem : vertexSet) {
+                output += elem + "\n";
+            }
+            output += "The number of edges are: " + edgeSet.size() + "\n";
+            output += "The nodes with the direction of edges: \n";
+            for (DefaultEdge edge : edgeSet) {
+                String source = graph.getEdgeSource(edge);
+                String target = graph.getEdgeTarget(edge);
+                output += source + " -> " + target + "\n";
+            }
+            return output;
+        } catch (Exception e) {
+            throw new IOException("Error while constructing output string: " + e.getMessage(), e);
         }
-        output += "The number of edges are: " + edgeSet.size() + "\n";
-        output += "The nodes with the direction of edges: \n";
-        for (DefaultEdge edge : edgeSet) {
-            String source = graph.getEdgeSource(edge);
-            String target = graph.getEdgeTarget(edge);
-            output += source + " -> " + target + "\n";
-        }
-        return output;
     }
 
     @Override
@@ -110,18 +115,19 @@ public class GraphManager {
             output = constructOutputString();
         } catch (Exception e) {
             e.printStackTrace();
+            return "Error while constructing output string: " + e.getMessage();
         }
         return output;
 
     }
 
-    public void outputGraph(String filePath) throws Exception {
+    public void exportGraphInfo(String filePath) throws Exception {
         String output = constructOutputString();
         try {
             Files.write(Paths.get(filePath), output.getBytes());
             System.out.println("Successfully wrote graph information to " + filePath);
         } catch (IOException e) {
-            throw new Exception("Unable to write graph infostring to file", e);
+            throw new Exception("Unable to write graph info string to file", e);
         }
     }
 
@@ -173,14 +179,17 @@ public class GraphManager {
     }
 
     public boolean removeNodes(String[] labels) throws Exception {
-        boolean check = true;
+        ArrayList<String> failedNodes = new ArrayList<>();
         for (String label : labels) {
             if (!removeNode(label)) {
-                System.out.println("Failed to remove node " + label);
-                check = false;
+                failedNodes.add(label);
             }
         }
-        return check;
+        if (!failedNodes.isEmpty()) {
+            System.out.println("Failed to remove nodes: " + failedNodes);
+            return false;
+        }
+        return true;
     }
 
     public boolean addEdge(String srcLabel, String dstLabel) throws Exception {
@@ -213,7 +222,7 @@ public class GraphManager {
 
     }
 
-    public void outputDOTGraph(String filePath) throws Exception {
+    public void exportGraphToDOT(String filePath) throws Exception {
         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>();
         StringWriter writer = new StringWriter();
         String dotString;
@@ -233,7 +242,7 @@ public class GraphManager {
 
     }
 
-    public void outputGraphics(String filePath) throws Exception {
+    public void exportGraphToPNG(String filePath) throws Exception {
         JGraphXAdapter<String, DefaultEdge> graphAdapter = new JGraphXAdapter<String, DefaultEdge>(graph);
         mxIGraphLayout layout = new mxCircleLayout(graphAdapter);
         try {
@@ -251,32 +260,23 @@ public class GraphManager {
         }
     }
 
-    public Path GraphSearch(String src, String dst, Algorithm algo) {
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
-            return null;
-        }
-        Iterator<String> iterator;
-        if (algo == Algorithm.BFS) {
-            iterator = new BreadthFirstIterator<>(graph, src);
-        } else if (algo == Algorithm.DFS) {
-            iterator = new DepthFirstIterator<>(graph, src);
-        } else {
-            return null;
-        }
 
-        Path path = new Path();
-        while(iterator.hasNext()) {
-            String node = iterator.next();
-            path.addNode(node);
-            if(node.equals(dst)) {
-                break;
+    public Path GraphSearch(String src, String dst, Algorithm algo) {
+
+        GraphSearchContext gs = new GraphSearchContext();
+        SearchStrategy searchAlgo;
+
+        switch (algo) {
+            case BFS -> searchAlgo = new BreadthFirstSearch(getGraph());
+            case DFS -> searchAlgo = new DepthFirstSearch(getGraph());
+            case RandomWalkSearch -> searchAlgo = new RandomWalkSearch(getGraph());
+            default -> {
+                return null;
             }
         }
-        if (path.containsNode(dst)) {
-            return path;
-        } else {
-            return null;
-        }
+
+        gs.setSearchAlgorithm(searchAlgo);
+        return gs.executeSearchAlgorithm(src, dst);
     }
 
 }

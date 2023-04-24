@@ -1,5 +1,7 @@
 package com.parth.project;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +19,7 @@ public class GraphManagerTest {
     @BeforeEach
     public void setup() throws Exception {
         g = new GraphManager();
-        g.parseGraph("src/test.dot");
+        g.importGraphFromDOT("src/test.dot");
     }
 
     @Test
@@ -31,7 +33,7 @@ public class GraphManagerTest {
         System.out.println(g.toString());
 
         Exception exception = assertThrows(Exception.class, () -> {
-            g.parseGraph("src/doesnotexist.dot");
+            g.importGraphFromDOT("src/doesnotexist.dot");
         });
 
         String expectedMessage = "Error while reading file";
@@ -51,7 +53,7 @@ public class GraphManagerTest {
 
     @Test
     public void testOutputGraph() throws Exception {
-        g.outputGraph("src/testOutputGraph.txt");
+        g.exportGraphInfo("src/testOutputGraph.txt");
         String output = Files.readString(Paths.get("src/testOutputGraph.txt"));
         String expected = Files.readString(Paths.get("src/expectedString.txt"));
         assertEquals(output, expected);
@@ -129,7 +131,7 @@ public class GraphManagerTest {
     public void testOutputDOTGraph() throws Exception {
         g.addEdge("e", "f");
         String outputfile = "src/output2.dot";
-        g.outputDOTGraph(outputfile);
+        g.exportGraphToDOT(outputfile);
 
         String output = Files.readString(Paths.get(outputfile));
         System.out.println("output: " + output);
@@ -138,9 +140,9 @@ public class GraphManagerTest {
     }
 
     @Test
-    public void testBFS() throws Exception {
+    public void testBFSWithStrategyPattern() throws Exception {
         GraphManager gm = new GraphManager();
-        gm.parseGraph("src/test2.dot");
+        gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
         expected.add("a");
         expected.add("d");
@@ -152,7 +154,7 @@ public class GraphManagerTest {
         GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.BFS);
 
         assertNotNull(result);
-        assertEquals(expected, result.nodes);
+        assertEquals(expected, result.getNodeList());
         assertEquals(expectedString, result.toString());
 
         result = gm.GraphSearch("h", "a", GraphManager.Algorithm.BFS);
@@ -160,9 +162,9 @@ public class GraphManagerTest {
     }
 
     @Test
-    public void testDFS() throws Exception {
+    public void testDFSWithStrategyPattern() throws Exception {
         GraphManager gm = new GraphManager();
-        gm.parseGraph("src/test2.dot");
+        gm.importGraphFromDOT("src/test2.dot");
         ArrayList<String> expected = new ArrayList<>();
         expected.add("a");
         expected.add("b");
@@ -178,10 +180,62 @@ public class GraphManagerTest {
         GraphManager.Path result = gm.GraphSearch("a", "h", GraphManager.Algorithm.DFS);
 
         assertNotNull(result);
-        assertEquals(expected, result.nodes);
+        assertEquals(expected, result.getNodeList());
         assertEquals(expectedString, result.toString());
 
         result = gm.GraphSearch("h", "a", GraphManager.Algorithm.DFS);
+        assertNull(result);
+    }
+
+    @Test
+    public void testBFSWithTemplatePattern() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.importGraphFromDOT("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("d");
+        expected.add("c");
+        expected.add("b");
+        expected.add("h");
+        String expectedString = "a -> d -> c -> b -> h";
+
+        Graph<String,DefaultEdge> currGraph = gm.getGraph();
+        BreadthFirstSearch bfs = new BreadthFirstSearch(currGraph);
+        GraphManager.Path result = bfs.search("a", "h");
+
+        assertNotNull(result);
+        assertEquals(expected, result.getNodeList());
+        assertEquals(expectedString, result.toString());
+
+        result = bfs.search("h", "a");
+        assertNull(result);
+    }
+
+    @Test
+    public void testDFSWithTemplatePattern() throws Exception {
+        GraphManager gm = new GraphManager();
+        gm.importGraphFromDOT("src/test2.dot");
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("a");
+        expected.add("b");
+        expected.add("f");
+        expected.add("e");
+        expected.add("c");
+        expected.add("g");
+        expected.add("d");
+        expected.add("i");
+        expected.add("h");
+        String expectedString = "a -> b -> f -> e -> c -> g -> d -> i -> h";
+
+        Graph<String,DefaultEdge> currGraph = gm.getGraph();
+        DepthFirstSearch dfs = new DepthFirstSearch(currGraph);
+        GraphManager.Path result = dfs.search("a", "h");
+
+        assertNotNull(result);
+        assertEquals(expected, result.getNodeList());
+        assertEquals(expectedString, result.toString());
+
+        result = dfs.search("h", "a");
         assertNull(result);
     }
 
