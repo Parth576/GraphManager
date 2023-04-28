@@ -1,4 +1,4 @@
-# CSE 464 Project Part 1 & 2
+# CSE 464 Project Part 1, 2 & 3
 
 ## GraphManager
 
@@ -25,7 +25,7 @@
 - ```boolean removeEdge(String srcLabel, String dstLabel)``` - Returns true if edge is removed successfully otherwise returns false if edge does not exist in the graph
 - ```void outputDOTGraph(String filePath)``` - Outputs the modified graph in DOT format to the specified file
 - ```void outputGraphics(String filePath)``` - Output the modified graph to a PNG file (Graph Visualization)
-- ```Path GraphSearch(String src, String dst, Algorithm algo)``` - Find a path from ```src``` to ```dst``` node using BFS or DFS algorithm depending on enum specified. Possible values of the enum can be ```Algorithm.BFS``` or ```Algorithm.DFS```
+- ```Path GraphSearch(String src, String dst, Algorithm algo)``` - Find a path from ```src``` to ```dst``` node using BFS or DFS or Random Walk algorithm depending on enum specified. Possible values of the enum can be ```Algorithm.BFS```, ```Algorithm.DFS``` or ```Algorithm.RandomWalkSearch```
 
 ### Example Code
 - Creating a new GraphManager object
@@ -58,19 +58,17 @@ g.outputDOTGraph("src/modified.dot");
 g.outputGraphics("src/modified.png");
 ```
 
-- Find a path from one node to another using BFS or DFS algorithm
+- Find a path from one node to another using BFS, DFS or Random Walk algorithm
 ```java
 Path bfs = g.GraphSearch("a", "c", Algorithm.BFS);
 Path dfs = g.GraphSearch("c", "d", Algorithm.DFS);
-
+Path rws = g.GraphSearch("a","c", Algorithm.RandomWalkSearch);
 ```
 
 - The ```toString()``` methods of the ```Path``` class will print the path in the format ```a -> b -> c```
 - If no path if found, the ```GraphSearch``` API returns ```null```, so we need to check if the returned path is not null
-- The ```Path``` class also exposes the variable ```nodes``` which is an ArrayList containing the searched nodes in the order that they were visited
+- The ```Path``` class also exposes the method ```getNodeList()``` which returns an ArrayList containing the searched nodes in the order that they were visited
 ```java
 if (bfs != null) System.out.println(bfs.toString());
-if (dfs != null) System.out.println(dfs.toString());
-bfs.nodes;
-dfs.nodes;
+ArrayList<String> nodes = bfs.getNodeList();
 ```
